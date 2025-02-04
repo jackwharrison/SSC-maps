@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Mapbox Map</title>
+
+    <!-- Load Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { width: 100vw; height: 100vh; }
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Layer Toggle Controls -->
+    <div class="controls">
+        <label><input type="checkbox" id="typhoonLayer" checked> Typhoon Paths</label><br>
+        <label><input type="checkbox" id="floodLayer" checked> Flood Extent</label><br>
+        <label><input type="checkbox" id="volcanoLayer" checked> Volcanoes</label>
+    </div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiamhhcnJpc29uLXJlZGNyb3NzIiwiYSI6ImNsd3Jzc3lwbjAzaHUybnNhOGdwb2lrbXAifQ.bY4hcWmJvqviqRwn3nAvjQ';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/jharrison-redcross/cm6a5gtbd002s01qx8mooelnk',
+            center: [121, 13], // Adjust if needed
+            zoom: 5
+        });
+
+        // Layer IDs from Mapbox Studio
+        const layers = {
+            "typhoonLayer": "jharrison-redcross.5507376q",   // Typhoon Paths (line)
+            "floodLayer": "10k_Flood-6ijl6u",                // Flood Extent (fill)
+            "volcanoLayer": "merged_philippines-6fse6q"      // Volcanoes (symbol)
+        };
+
+        // Toggle Layer Visibility
+        function toggleLayer(layerId, isChecked) {
+            const visibility = isChecked ? 'visible' : 'none';
+            if (map.getLayer(layerId)) {
+                map.setLayoutProperty(layerId, 'visibility', visibility);
+            }
+        }
+
+        // Event Listeners for Checkboxes
+        document.querySelectorAll('.controls input').forEach(input => {
+            input.addEventListener('change', (event) => {
+                toggleLayer(layers[event.target.id], event.target.checked);
+            });
+        });
+
+        // Ensure Layers are Initially Visible on Load
+        map.on('load', () => {
+            Object.values(layers).forEach(layerId => {
+                if (map.getLayer(layerId)) {
+                    map.setLayoutProperty(layerId, 'visibility', 'visible');
+                }
+            });
+        });
+
+    </script>
+
+</body>
+</html>

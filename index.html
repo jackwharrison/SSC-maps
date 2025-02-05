@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Mapbox Map</title>
+    <title>Philippines Hazards</title>
 
     <!-- Load Mapbox GL JS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
@@ -32,7 +32,6 @@
 
     <!-- Layer Toggle Controls -->
     <div class="controls">
-        <label><input type="checkbox" id="typhoonLayer" checked> Typhoon Paths</label><br>
         <label><input type="checkbox" id="floodLayer" checked> Flood Extent</label><br>
         <label><input type="checkbox" id="volcanoLayer" checked> Volcanoes</label>
     </div>
@@ -48,11 +47,10 @@
         });
 
         // Layer IDs from Mapbox Studio
-        const layers = {
-            "typhoonLayer": "Super_Typhoon_Pepito-cbshy8",   // Typhoon Paths (line)
-            "floodLayer": "10k_Flood-6IJl6u",                // Flood Extent (fill)
-            "volcanoLayer": "merged_philippines-6fse6q"      // Volcanoes (symbol)
-        };
+        const layers = {  // Typhoon Paths
+    "floodLayer": "Flood Extent",                    // Flood Extent
+    "volcanoLayer": "Volcanos"                       // Volcanoes
+};
 
         // Toggle Layer Visibility
         function toggleLayer(layerId, isChecked) {
@@ -64,19 +62,31 @@
 
         // Event Listeners for Checkboxes
         document.querySelectorAll('.controls input').forEach(input => {
-            input.addEventListener('change', (event) => {
-                toggleLayer(layers[event.target.id], event.target.checked);
-            });
-        });
+    input.addEventListener('change', (event) => {
+        const layerId = layers[event.target.id];
+        const isChecked = event.target.checked;
+
+        console.log(`Checkbox toggled: ${event.target.id}, Layer: ${layerId}, Checked: ${isChecked}`);
+
+        if (map.getLayer(layerId)) {
+            map.setLayoutProperty(layerId, 'visibility', isChecked ? 'visible' : 'none');
+            console.log(`Layer ${layerId} visibility set to ${isChecked ? 'visible' : 'none'}`);
+        } else {
+            console.error(`Layer ${layerId} does not exist.`);
+        }
+    });
+});
 
         // Ensure Layers are Initially Visible on Load
         map.on('load', () => {
-            Object.values(layers).forEach(layerId => {
-                if (map.getLayer(layerId)) {
-                    map.setLayoutProperty(layerId, 'visibility', 'visible');
-                }
-            });
-        });
+    console.log("Map loaded successfully!");
+
+    Object.entries(layers).forEach(([key, layerId]) => {
+        const exists = map.getLayer(layerId);
+        console.log(`Layer: ${layerId}, Exists: ${!!exists}`);
+    });
+});
+
 
     </script>
 
